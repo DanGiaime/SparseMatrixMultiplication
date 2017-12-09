@@ -103,7 +103,7 @@ int CompressedSparseRow::GetStartOfRow(int row) {
 
 /// Returns a pointer to the end of the given row
 int CompressedSparseRow::GetEndOfRow(int row) {
-    int end_index = (row == 0) ? 0 : this->row_ptr[row];
+    int end_index = this->row_ptr[row];
     return end_index;
 }
 

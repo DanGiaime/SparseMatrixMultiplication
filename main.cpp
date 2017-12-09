@@ -1,6 +1,7 @@
 #include <iostream>
 #include "CompressedSparseRow.h"
 #include "CompressedSparseColumn.h"
+#include "SparseMatrixMultiplier.h"
 
 int main() {
 
@@ -51,6 +52,8 @@ int main() {
 
     std::cout << *B;
 
+    SparseMatrixMultiplier smm(*A, *B);
+    smm.multiply();
 
 
 

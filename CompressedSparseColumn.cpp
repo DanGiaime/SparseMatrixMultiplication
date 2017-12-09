@@ -50,7 +50,9 @@ void CompressedSparseColumn::AddEdge(float val, int col, int row) {
         this->col_ptr[k]++;
     }
 
-
+    if(col_ptr[num_cols - 1] == num_edges) {
+        ConvertFromTempStorage();
+    }
 }
 
 CompressedSparseColumn::CompressedSparseColumn(int num_edges, int num_cols) : num_cols(num_cols), num_edges(num_edges){
@@ -60,22 +62,16 @@ CompressedSparseColumn::CompressedSparseColumn(int num_edges, int num_cols) : nu
     this->val = new float[num_edges];
 
     // Init row counts to zero (all rows begin with 0 items in them)
-    this->col_ptr = new int[num_edges];
+    this->col_ptr = new int[num_cols];
     std::fill_n(this->col_ptr, num_cols, 0);
 
-    // Init additional array locations to -1 sentinel value
-    // meaning this row does not exist (there is no row with -1 items in it)
-    std::fill_n(this->col_ptr + num_cols, num_edges - num_cols, -1);
-
-    // Init columns to -1 sentinel value (there is no column -1)
+    // Init columns to -1 sentinel value (there is no row -1)
     this->row = new int[num_edges];
     std::fill_n(this->row, num_edges, -1);
 
 }
 
 std::ostream &operator<<(std::ostream &os, const CompressedSparseColumn &col) {
-
-
 
     os << "col_ptr:" << std::endl;
     for (int i = 0; i < col.num_cols; ++i) {
@@ -105,12 +101,12 @@ void CompressedSparseColumn::ConvertFromTempStorage() {
 }
 
 int CompressedSparseColumn::GetStartOfColumn(int col) {
-    int begin_index = (col == 0) ? 0 : this->col_ptr[col];
+    int begin_index = (col == 0) ? 0 : this->col_ptr[col - 1];
     return begin_index;
 }
 
 int CompressedSparseColumn::GetEndOfColumn(int col) {
-    int end_index = (col == 0) ? 0 : this->col_ptr[col];
+    int end_index = this->col_ptr[col];
     return end_index;
 }
 

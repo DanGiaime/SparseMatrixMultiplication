@@ -18,12 +18,12 @@ public:
     int num_edges;
     std::list<CompressedSparseColumnNode> *temp_storage;
     void AddEdge(float val, int col, int row);
+    int GetStartOfColumn(int col);
+    int GetEndOfColumn(int col);
     CompressedSparseColumn(int num_edges, int num_cols);
     ~CompressedSparseColumn() = default;
 private:
     void ConvertFromTempStorage();
-    int GetStartOfColumn(int col);
-    int GetEndOfColumn(int col);
     friend std::ostream &operator<<(std::ostream &os, const CompressedSparseColumn &col);
 };
 
