@@ -20,7 +20,10 @@ public:
     void AddEdge(float val, int col, int row);
     CompressedSparseColumn(int num_edges, int num_cols);
     ~CompressedSparseColumn() = default;
-
+private:
+    void ConvertFromTempStorage();
+    int GetStartOfColumn(int col);
+    int GetEndOfColumn(int col);
     friend std::ostream &operator<<(std::ostream &os, const CompressedSparseColumn &col);
 };
 

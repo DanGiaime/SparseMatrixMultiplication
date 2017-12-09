@@ -5,6 +5,7 @@
 #include <iostream>
 #include "CompressedSparseRow.h"
 
+/// Add an edge to the row structure
 void CompressedSparseRow::AddEdge(float val, int row, int col) {
     int start_index = (row == 0) ? 0 : this->row_ptr[row - 1];
     auto itr = this->temp_storage->begin();
@@ -50,9 +51,14 @@ void CompressedSparseRow::AddEdge(float val, int row, int col) {
         this->row_ptr[k]++;
     }
 
+    if(row_ptr[num_rows - 1] == num_edges) {
+        ConvertFromTempStorage();
+    }
+
 
 }
 
+/// Create a CompressedSparseRow from a number of edges and rows
 CompressedSparseRow::CompressedSparseRow(int num_edges, int num_rows) : num_rows(num_rows), num_edges(num_edges){
     this->temp_storage = new std::list<CompressedSparseRowNode>();
 
@@ -73,22 +79,40 @@ CompressedSparseRow::CompressedSparseRow(int num_edges, int num_rows) : num_rows
 
 }
 
+/// Print out structure
 std::ostream &operator<<(std::ostream &os, const CompressedSparseRow &row) {
-
-
 
     os << "row_ptr:" << std::endl;
     for (int i = 0; i < row.num_rows; ++i) {
         os << "(" << i << ", " << row.row_ptr[i] << "), ";
     }
 
-    auto begin = row.temp_storage->begin();
-    auto end = row.temp_storage->end();
-    os << "temp_storage:" << std::endl;
-    while(begin != end) {
-        os << "(" << begin->val << ", " << begin->col << "), ";
-        ++begin;
+    os << "columns and vals:" << std::endl;
+    for (int j = 0; j < row.num_edges; ++j) {
+        os << "(" << row.val[j] << ", " << row.col[j] << "), ";
     }
 
     return os;
+}
+
+/// Returns a pointer to the start of the given row
+int CompressedSparseRow::GetStartOfRow(int row) {
+    int start_index = (row == 0) ? 0 : this->row_ptr[row - 1];
+    return start_index;
+}
+
+/// Returns a pointer to the end of the given row
+int CompressedSparseRow::GetEndOfRow(int row) {
+    int end_index = (row == 0) ? 0 : this->row_ptr[row];
+    return end_index;
+}
+
+/// Once we've ordered all the edges, move them into the array
+void CompressedSparseRow::ConvertFromTempStorage() {
+    auto curr = temp_storage->begin();
+    for (int i = 0; i < num_edges; ++i) {
+        val[i] = curr->val;
+        col[i] = curr->col;
+        ++curr;
+    }
 }

@@ -18,9 +18,12 @@ public:
     int num_edges;
     std::list<CompressedSparseRowNode> *temp_storage;
     void AddEdge(float val, int row, int col);
+    int GetStartOfRow(int row);
+    int GetEndOfRow(int row);
     CompressedSparseRow(int num_edges, int num_rows);
     ~CompressedSparseRow() = default;
-
+private:
+    void ConvertFromTempStorage();
     friend std::ostream &operator<<(std::ostream &os, const CompressedSparseRow &row);
 };
 

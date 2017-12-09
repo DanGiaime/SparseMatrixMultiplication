@@ -95,3 +95,22 @@ std::ostream &operator<<(std::ostream &os, const CompressedSparseColumn &col) {
     return os;
 }
 
+void CompressedSparseColumn::ConvertFromTempStorage() {
+    auto curr = temp_storage->begin();
+    for (int i = 0; i < num_edges; ++i) {
+        val[i] = curr->val;
+        row[i] = curr->row;
+        ++curr;
+    }
+}
+
+int CompressedSparseColumn::GetStartOfColumn(int col) {
+    int begin_index = (col == 0) ? 0 : this->col_ptr[col];
+    return begin_index;
+}
+
+int CompressedSparseColumn::GetEndOfColumn(int col) {
+    int end_index = (col == 0) ? 0 : this->col_ptr[col];
+    return end_index;
+}
+
