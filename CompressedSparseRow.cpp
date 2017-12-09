@@ -38,8 +38,15 @@ void CompressedSparseRow::AddEdge(float val, int row, int col) {
             ++end_itr;
         }
 
+        auto end_of_list_itr = temp_storage->end();
+        end_of_list_itr++;
+
+
         // If we haven't inserted put at end of list
-        if (itr == end_itr) {
+        if (itr == end_of_list_itr) {
+            this->temp_storage->push_back(CompressedSparseRowNode(val, col));
+        }
+        else {
             this->temp_storage->insert(itr, CompressedSparseRowNode(val, col));
         }
     }
@@ -54,6 +61,7 @@ void CompressedSparseRow::AddEdge(float val, int row, int col) {
         ConvertFromTempStorage();
     }
 
+    //std::cout << *this;
 
 }
 
@@ -65,12 +73,8 @@ CompressedSparseRow::CompressedSparseRow(int num_edges, int num_rows) : num_rows
     this->val = new float[num_edges];
 
     // Init row counts to zero (all rows begin with 0 items in them)
-    this->row_ptr = new int[num_edges];
+    this->row_ptr = new int[num_rows];
     std::fill_n(this->row_ptr, num_rows, 0);
-
-    // Init additional array locations to -1 sentinel value
-    // meaning this row does not exist (there is no row with -1 items in it)
-    std::fill_n(this->row_ptr + num_rows, num_edges - num_rows, -1);
 
     // Init columns to -1 sentinel value (there is no column -1)
     this->col = new int[num_edges];

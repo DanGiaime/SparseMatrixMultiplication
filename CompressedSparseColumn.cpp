@@ -39,7 +39,11 @@ void CompressedSparseColumn::AddEdge(float val, int col, int row) {
         }
 
         // If we haven't inserted put at end of list
-        if (itr == end_itr) {
+        // If we're at the literal end of the entire list, emplace_back so we don't go too far
+        if (itr == temp_storage->end()) {
+            this->temp_storage->push_back(CompressedSparseColumnNode(val, row));
+        }
+        else {
             this->temp_storage->insert(itr, CompressedSparseColumnNode(val, row));
         }
     }
