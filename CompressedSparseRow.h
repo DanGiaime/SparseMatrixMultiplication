@@ -21,7 +21,7 @@ public:
     int GetStartOfRow(int row);
     int GetEndOfRow(int row);
     CompressedSparseRow(int num_edges, int num_rows);
-    ~CompressedSparseRow() = default;
+    ~CompressedSparseRow();
 private:
     void ConvertFromTempStorage();
     friend std::ostream &operator<<(std::ostream &os, const CompressedSparseRow &row);

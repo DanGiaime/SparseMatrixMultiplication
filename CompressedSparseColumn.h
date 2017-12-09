@@ -21,7 +21,7 @@ public:
     int GetStartOfColumn(int col);
     int GetEndOfColumn(int col);
     CompressedSparseColumn(int num_edges, int num_cols);
-    ~CompressedSparseColumn() = default;
+    ~CompressedSparseColumn();
 private:
     void ConvertFromTempStorage();
     friend std::ostream &operator<<(std::ostream &os, const CompressedSparseColumn &col);

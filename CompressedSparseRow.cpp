@@ -115,3 +115,12 @@ void CompressedSparseRow::ConvertFromTempStorage() {
         ++curr;
     }
 }
+
+CompressedSparseRow::~CompressedSparseRow() {
+    delete temp_storage;
+    delete [] col;
+    delete [] val;
+    delete [] row_ptr;
+}
+
+

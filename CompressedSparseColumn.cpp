@@ -112,3 +112,10 @@ int CompressedSparseColumn::GetEndOfColumn(int col) {
     return end_index;
 }
 
+CompressedSparseColumn::~CompressedSparseColumn() {
+    delete temp_storage;
+    delete [] row;
+    delete [] val;
+    delete [] col_ptr;
+}
+
