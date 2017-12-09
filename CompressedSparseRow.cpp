@@ -92,5 +92,3 @@ std::ostream &operator<<(std::ostream &os, const CompressedSparseRow &row) {
 
     return os;
 }
-
-CompressedSparseRow::~CompressedSparseRow() = default;

@@ -77,10 +77,12 @@ std::ostream &operator<<(std::ostream &os, const CompressedSparseColumn &col) {
 
 
 
-    os << "row_ptr:" << std::endl;
+    os << "col_ptr:" << std::endl;
     for (int i = 0; i < col.num_cols; ++i) {
         os << "(" << i << ", " << col.col_ptr[i] << "), ";
     }
+    os << std::endl;
+
 
     auto begin = col.temp_storage->begin();
     auto end = col.temp_storage->end();

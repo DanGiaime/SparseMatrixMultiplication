@@ -1,5 +1,6 @@
 #include <iostream>
 #include "CompressedSparseRow.h"
+#include "CompressedSparseColumn.h"
 
 int main() {
 
@@ -37,6 +38,18 @@ int main() {
     }
 
     std::cout << *A;
+
+    std::unique_ptr<CompressedSparseColumn> B(new CompressedSparseColumn(b_num_edges, b_m));
+    std::cout << "Please enter each edge in B in val row col order" << std::endl;
+
+    for (int i = 0; i < b_num_edges; ++i) {
+        std::cin >> val;
+        std::cin >> row;
+        std::cin >> col;
+        B->AddEdge(val, col, row);
+    }
+
+    std::cout << *B;
 
 
 
