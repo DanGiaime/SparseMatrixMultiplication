@@ -38,7 +38,7 @@ int main() {
         A->AddEdge(val, row, col);
     }
 
-    std::cout << *A;
+    //std::cout << *A;
 
     std::unique_ptr<CompressedSparseColumn> B(new CompressedSparseColumn(b_num_edges, b_m));
     std::cout << "Please enter each edge in B in val row col order" << std::endl;
@@ -50,13 +50,19 @@ int main() {
         B->AddEdge(val, col, row);
     }
 
-    std::cout << *B;
+    //std::cout << *B;
 
     SparseMatrixMultiplier smm(*A, *B);
-    smm.multiply();
+    float** output = smm.multiply();
+    //std::flush(std::cout);
+    std::cout << std::endl;
 
-
-
+    for (int j = 0; j < A->num_rows; ++j) {
+        for (int i = 0; i < B->num_cols; ++i) {
+            std::cout << output[i][j] << "   ";
+        }
+        std::cout << std::endl;
+    }
 
 
     return 0;

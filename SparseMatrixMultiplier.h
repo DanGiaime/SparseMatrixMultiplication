@@ -13,10 +13,10 @@ class SparseMatrixMultiplier {
 public:
     CompressedSparseRow A;
     CompressedSparseColumn B;
-    void multiply();
+    float** multiply();
     SparseMatrixMultiplier(const CompressedSparseRow &A, const CompressedSparseColumn &B);
 private:
-    float multiply_single_element(int row_start, int row_end, int col_start, int col_end);
+    void multiply_single_element(int row_start, int row_end, int col_start, int col_end, float *out, int answer_col);
 };
 
 

@@ -5,6 +5,7 @@
 #include <iostream>
 #include "CompressedSparseColumn.h"
 
+/// Add an edge to the column structure
 void CompressedSparseColumn::AddEdge(float val, int col, int row) {
     int start_index = (col == 0) ? 0 : this->col_ptr[col - 1];
     auto itr = this->temp_storage->begin();
@@ -22,7 +23,6 @@ void CompressedSparseColumn::AddEdge(float val, int col, int row) {
     for (int j = start_index; j < end_index; ++j) {
         if(itr->row > row) {
             this->temp_storage->insert(itr, CompressedSparseColumnNode(val, row));
-            std::cout << "Inserted at not end (" << val << ", " << row << ")" << std::endl;
             placed = true;
             break;
         }
@@ -41,7 +41,6 @@ void CompressedSparseColumn::AddEdge(float val, int col, int row) {
         // If we haven't inserted put at end of list
         if (itr == end_itr) {
             this->temp_storage->insert(itr, CompressedSparseColumnNode(val, row));
-            std::cout << "Inserted at end (" << val << ", " << row << ")" << std::endl;
         }
     }
 
@@ -50,11 +49,13 @@ void CompressedSparseColumn::AddEdge(float val, int col, int row) {
         this->col_ptr[k]++;
     }
 
+    // If we've read in every edge, write to our arrays
     if(col_ptr[num_cols - 1] == num_edges) {
         ConvertFromTempStorage();
     }
 }
 
+/// Create a CompressedSparseColumn from a number of edges and cols
 CompressedSparseColumn::CompressedSparseColumn(int num_edges, int num_cols) : num_cols(num_cols), num_edges(num_edges){
     this->temp_storage = new std::list<CompressedSparseColumnNode>();
 
@@ -80,17 +81,16 @@ std::ostream &operator<<(std::ostream &os, const CompressedSparseColumn &col) {
     os << std::endl;
 
 
-    auto begin = col.temp_storage->begin();
-    auto end = col.temp_storage->end();
-    os << "temp_storage:" << std::endl;
-    while(begin != end) {
-        os << "(" << begin->val << ", " << begin->row << "), ";
-        ++begin;
+    os << "rows and vals:" << std::endl;
+    for (int j = 0; j < col.num_edges; ++j) {
+        os << "(" << col.val[j] << ", " << col.row[j] << "), ";
     }
+
 
     return os;
 }
 
+/// Once we've ordered all the edges, move them into the array
 void CompressedSparseColumn::ConvertFromTempStorage() {
     auto curr = temp_storage->begin();
     for (int i = 0; i < num_edges; ++i) {
@@ -100,11 +100,13 @@ void CompressedSparseColumn::ConvertFromTempStorage() {
     }
 }
 
+/// Returns the index into row[] that is the start of the given row
 int CompressedSparseColumn::GetStartOfColumn(int col) {
     int begin_index = (col == 0) ? 0 : this->col_ptr[col - 1];
     return begin_index;
 }
 
+/// Returns the index into row[] that is the end of the given row
 int CompressedSparseColumn::GetEndOfColumn(int col) {
     int end_index = this->col_ptr[col];
     return end_index;

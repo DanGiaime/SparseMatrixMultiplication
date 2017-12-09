@@ -23,7 +23,6 @@ void CompressedSparseRow::AddEdge(float val, int row, int col) {
     for (int j = start_index; j < end_index; ++j) {
         if(itr->col > col) {
             this->temp_storage->insert(itr, CompressedSparseRowNode(val, col));
-            std::cout << "Inserted at not end (" << val << ", " << col << ")" << std::endl;
             placed = true;
             break;
         }
@@ -42,7 +41,6 @@ void CompressedSparseRow::AddEdge(float val, int row, int col) {
         // If we haven't inserted put at end of list
         if (itr == end_itr) {
             this->temp_storage->insert(itr, CompressedSparseRowNode(val, col));
-            std::cout << "Inserted at end (" << val << ", " << col << ")" << std::endl;
         }
     }
 
@@ -51,6 +49,7 @@ void CompressedSparseRow::AddEdge(float val, int row, int col) {
         this->row_ptr[k]++;
     }
 
+    // If we've read in every edge, write to our arrays
     if(row_ptr[num_rows - 1] == num_edges) {
         ConvertFromTempStorage();
     }
@@ -95,13 +94,13 @@ std::ostream &operator<<(std::ostream &os, const CompressedSparseRow &row) {
     return os;
 }
 
-/// Returns a pointer to the start of the given row
+/// Returns the index into col[] that is the start of the given row
 int CompressedSparseRow::GetStartOfRow(int row) {
     int start_index = (row == 0) ? 0 : this->row_ptr[row - 1];
     return start_index;
 }
 
-/// Returns a pointer to the end of the given row
+/// Returns the index into col[] that is the end of the given row
 int CompressedSparseRow::GetEndOfRow(int row) {
     int end_index = this->row_ptr[row];
     return end_index;

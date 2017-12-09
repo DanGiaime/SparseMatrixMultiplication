@@ -3,14 +3,21 @@
 //
 
 #include <iostream>
+#include <thread>
+#include <vector>
 #include "SparseMatrixMultiplier.h"
 
 SparseMatrixMultiplier::SparseMatrixMultiplier(const CompressedSparseRow &A, const CompressedSparseColumn &B) : A(A),
                                                                                                                 B(B) {}
 
-void SparseMatrixMultiplier::multiply() {
-    //float new_matrix[A.num_rows][B.num_cols];
-   // auto new_matrix = new float[A.num_rows][B.num_cols];
+float** SparseMatrixMultiplier::multiply() {
+
+    auto **answer_matrix = new float*[A.num_rows];
+    for (int k = 0; k < A.num_rows; ++k) {
+        answer_matrix[k] = new float[B.num_cols];
+    }
+
+    std::vector<std::thread> threads;
 
     // Iterate over all rows in A
     for (int i = 0; i < A.num_rows; ++i) {
@@ -26,18 +33,27 @@ void SparseMatrixMultiplier::multiply() {
             // We're looping over all entries in this column
             // We're checking the row value of each entry in this column
             // Then we're going to perform a merge-sort-esque multiplication
-            float total = multiply_single_element(row_start, row_end, col_start, col_end);
-
-            std::cout << std::endl;
-            std::cout << row_start << " " << row_end << " " << col_start << " " << col_end << std::endl;
-            std::cout << "Row: " << i << ", Col: " << j << ", Total: " << total << std::endl;
+            // Since this is entirely read based right up until we
+            // write the value to the output matrix, we can make
+            // each (row of A * col of B) calculation into a separate thread
+            threads.emplace_back(std::thread(&SparseMatrixMultiplier::multiply_single_element, this, row_start, row_end, col_start, col_end, answer_matrix[i], j));
         }
     }
+
+    auto curr = threads.begin();
+    auto end = threads.end();
+    while(curr != end) {
+        curr->join();
+        ++curr;
+    }
+
+    return answer_matrix;
 
 }
 
 /// This function multiplies one row of A by one column of B
-float SparseMatrixMultiplier::multiply_single_element(int row_start, int row_end, int col_start, int col_end) {
+void SparseMatrixMultiplier::multiply_single_element(int row_start, int row_end, int col_start, int col_end,
+                                                      float *out, int answer_col) {
 
     // Here comes some merge-sort ish multiplication
     // We need to move between each array depending on where the elements lie
@@ -62,11 +78,10 @@ float SparseMatrixMultiplier::multiply_single_element(int row_start, int row_end
         // To fully understand why this is
         int row_index = A.col[row_curr];
         int col_index = B.row[col_curr];
-        std::cout << row_index << " " << col_index;
+
         // If index into row == index into col
         // We have two corresponding numbers we can multiply
         if(row_index == col_index) {
-            std::cout << A.val[row_curr] << " " << B.val[col_curr];
             total += A.val[row_curr] * B.val[col_curr];
             row_curr++;
             col_curr++;
@@ -80,6 +95,6 @@ float SparseMatrixMultiplier::multiply_single_element(int row_start, int row_end
     }
 
     // Total is now the value of this element in the matrix;
-    return total;
+    out[answer_col] = total;
 
 }
