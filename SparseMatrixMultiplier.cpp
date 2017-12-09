@@ -36,7 +36,14 @@ float** SparseMatrixMultiplier::multiply() {
             // Since this is entirely read based right up until we
             // write the value to the output matrix, we can make
             // each (row of A * col of B) calculation into a separate thread
-            threads.emplace_back(std::thread(&SparseMatrixMultiplier::multiply_single_element, this, row_start, row_end, col_start, col_end, answer_matrix[i], j));
+            if((row_start != row_end) && (col_start != col_end)) {
+                threads.emplace_back(
+                        std::thread(&SparseMatrixMultiplier::multiply_single_element, this, row_start, row_end,
+                                    col_start, col_end, answer_matrix[i], j));
+            }
+            else {
+                answer_matrix[i][j] = 0;
+            }
         }
     }
 
