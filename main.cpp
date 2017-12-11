@@ -58,7 +58,7 @@ int main() {
 
     for (int j = 0; j < A->num_rows; ++j) {
         for (int i = 0; i < B->num_cols; ++i) {
-            std::cout << output[j][i] << "   ";
+            std::cout << output[j][i] << ",";
         }
         std::cout << std::endl;
     }
